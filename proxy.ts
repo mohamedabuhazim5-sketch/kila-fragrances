@@ -1,49 +1,54 @@
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
 
-const adminMatcher = /^\/admin(\/.*)?$/
+type CookieToSet = {
+  name: string
+  value: string
+  options: CookieOptions
+}
 
 export async function proxy(request: NextRequest) {
-  const response = NextResponse.next()
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers
+    }
+  })
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
-  if (!url || !key) {
+  if (!supabaseUrl || !supabaseKey) {
     return response
   }
 
-  const supabase = createServerClient(url, key, {
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll()
       },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => {
+      setAll(cookiesToSet: CookieToSet[]) {
+        cookiesToSet.forEach(({ name, value }) => {
           request.cookies.set(name, value)
+        })
+
+        response = NextResponse.next({
+          request
+        })
+
+        cookiesToSet.forEach(({ name, value, options }) => {
           response.cookies.set(name, value, options)
         })
       }
     }
   })
 
-  const { data } = await supabase.auth.getUser()
-
-  const pathname = request.nextUrl.pathname
-  const isAdminRoute = adminMatcher.test(pathname)
-  const isLoginRoute = pathname === '/admin/login'
-
-  if (isAdminRoute && !isLoginRoute && !data.user) {
-    return NextResponse.redirect(new URL('/admin/login', request.url))
-  }
-
-  if (isLoginRoute && data.user) {
-    return NextResponse.redirect(new URL('/admin', request.url))
-  }
+  await supabase.auth.getUser()
 
   return response
 }
 
 export const config = {
-  matcher: ['/admin/:path*']
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'
+  ]
 }
