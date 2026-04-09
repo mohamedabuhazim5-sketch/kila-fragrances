@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" fill="none">
+<rect width="1200" height="1200" fill="#17171A"/>
+<rect x="180" y="180" width="840" height="840" rx="48" fill="#0F0F11" stroke="#2A2A2F" stroke-width="4"/>
+<rect x="450" y="250" width="300" height="120" rx="20" fill="#C9A45C" fill-opacity="0.18"/>
+<rect x="410" y="370" width="380" height="420" rx="36" fill="#1D1D21" stroke="#C9A45C" stroke-opacity="0.35" stroke-width="6"/>
+<rect x="480" y="320" width="240" height="80" rx="16" fill="#E7D3A7" fill-opacity="0.2"/>
+<text x="600" y="890" text-anchor="middle" fill="#E7D3A7" font-family="Arial, Helvetica, sans-serif" font-size="44">Kila Fragrances</text>
+<text x="600" y="948" text-anchor="middle" fill="#BFAF8E" font-family="Arial, Helvetica, sans-serif" font-size="28">Product image placeholder</text>
+</svg>
